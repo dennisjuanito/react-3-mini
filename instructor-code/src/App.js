@@ -1,10 +1,13 @@
 import React, { Component } from 'react';
 import logo from './mainStreetAuto.svg';
 import axios from 'axios';
-import './App.css'; // if we install manually we need to import "npm i axios" in terminal
+import './App.css';
+
 
 // Toast notification dependencies
 import { ToastContainer, toast } from 'react-toastify';
+
+const baseUrl = 'http://joes-autos.herokuapp.com/api';
 
 class App extends Component {
   constructor(props) {
@@ -31,33 +34,29 @@ class App extends Component {
   getVehicles() {
     // axios (GET)
     // setState with response -> vehiclesToDisplay
-    axios.get(`https://joes-autos.herokuapp.com/api/vehicles`)
-         .then(res => {
-               toast.success(`The API is successfully connected!`);
-               this.setState({vehiclesToDisplay: res.data})})
-         .catch(() => toast.error(`The API is not successfully connected!`))
+    let promise = axios.get(baseUrl + '/vehicles')
+
+    promise.then((result) => {
+      this.setState({
+        vehiclesToDisplay: result.data
+      })
+    })
   }
 
   getPotentialBuyers() {
     // axios (GET)
     // setState with response -> buyersToDisplay
-    axios.get(`https://joes-autos.herokuapp.com/api/buyers`)
-          .then(res => {
-           toast.success(`The API is successfully connected!`);
-           this.setState({buyersToDisplay: res.data})})
-     .catch(() => toast.error(`The API is not successfully connected!`))
   }
 
   sellCar(id) {
     // axios (DELETE)
     // setState with response -> vehiclesToDisplay
-    axios.delete(`https://joes-autos.herokuapp.com/api/vehicles/${ id }`)
-         .then(res => {
-          toast.success("Delete is success!");
-           this.setState({
-             vehiclesToDisplay: res.data.vehicles
-           });
-         }).catch(() => toast.success("Delete is failed!"));
+
+    axios.delete(baseUrl + '/vehicles/' + id).then((response) => {
+      this.setState({
+        vehiclesToDisplay: response.data.vehicles
+      })
+    })
   }
 
   filterByMake() {
@@ -65,42 +64,30 @@ class App extends Component {
 
     // axios (GET)
     // setState with response -> vehiclesToDisplay
-    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?make=${ make }`)
-          .then(res => {
-           toast.success(`The API is successfully connected!`);
-           this.setState(
-             {vehiclesToDisplay: res.data}
-            )
-          })
-     .catch(() => toast.error(`The API is not successfully connected!`))
-   }
+    axios.get(baseUrl + '/vehicles?make=' + make)
+      .then(response => {
+        this.setState({
+          vehiclesToDisplay: response.data
+        })
+      })
+  }
 
   filterByColor() {
     let color = this.selectedColor.value;
 
     // axios (GET)
     // setState with response -> vehiclesToDisplay
-    axios.get(`https://joes-autos.herokuapp.com/api/vehicles?color=${ color }`)
-          .then(res => {
-           toast.success(`The API is successfully connected!`);
-           this.setState(
-             {vehiclesToDisplay: res.data}
-            )
-          })
-     .catch(() => toast.error(`The API is not successfully connected!`))
   }
 
   updatePrice(priceChange, id) {
     // axios (PUT)
     // setState with response -> vehiclesToDisplay
-    axios.put(`https://joes-autos.herokuapp.com/api/vehicles/${ id }/${ priceChange }`)
-         .then((res) => {
-          console.log(res);
-           toast.success(`You are successfully updating the price!`);
-           this.setState({
-             vehiclesToDisplay: res.data.vehicles
-           });
-         }).catch(() => toast.error(`You are not successfully updating the price!`));
+    axios.put(baseUrl + `/vehicles/${id}/${priceChange}`)
+      .then((response) => {
+        this.setState({
+          vehiclesToDisplay: response.data.vehicles
+        })
+      })
   }
 
   addCar() {
@@ -114,13 +101,13 @@ class App extends Component {
 
     // axios (POST)
     // setState with response -> vehiclesToDisplay
-               
-    axios.post(`https://joes-autos.herokuapp.com/api/vehicles`, newCar)
-         .then((res) => {
-           console.log(res);
-           toast.success(`You are successfully adding a car!`);
-           this.setState({vehiclesToDisplay: res.data.vehicles});
-         }).catch(() => toast.error(`You are not successfully adding a car!`));
+    let promise = axios.post(baseUrl + '/vehicles', newCar)
+
+    promise.then((response) => {
+      this.setState({
+        vehiclesToDisplay: response.data.vehicles
+      })
+    })
   }
 
   addBuyer() {
@@ -132,40 +119,18 @@ class App extends Component {
 
     //axios (POST)
     // setState with response -> buyersToDisplay
-    axios.post(`https://joes-autos.herokuapp.com/api/buyers`, newBuyer)
-         .then((res) => {
-           console.log(res);
-           toast.success(`You are successfully adding a buyer!`);
-           this.setState({buyersToDisplay: res.data.buyers});
-         }).catch(() => toast.error(`You are not successfully adding a buyer!`));
   }
 
   deleteBuyer(id) {
     // axios (DELETE)
     //setState with response -> buyersToDisplay
-    axios.delete(`https://joes-autos.herokuapp.com/api/buyers/${ id }`)
-         .then(( res ) => {
-          toast.success(`You are successfully deleting a car!`);
-           this.setState({
-             buyersToDisplay: [...res.data.buyers]
-           });
-         }).catch(() => toast.error(`You are not successfully deleting a car!`))
-    }
-
+  }
 
   nameSearch() {
     let searchLetters = this.searchLetters.value;
 
     // axios (GET)
     // setState with response -> buyersToDisplay
-    axios.get(`https://joes-autos.herokuapp.com/api/buyers?name=${ searchLetters }`)
-         .then((res) => {
-          toast.success(`You are successfully seach a buyer!`)
-          this.setState({
-            buyersToDisplay: [...res.data]
-          });
-         })
-        .catch(() => toast.error(`You are not successfully seach a buyer!`))
   }
 
   byYear() {
@@ -173,14 +138,6 @@ class App extends Component {
 
     // axios (GET)
     // setState with response -> vehiclesToDisplay
-    axios.get(`https://joes-autos.herokuapp.com/api/buyers?year=${ year }`)
-         .then((res) => {
-          toast.success(`You are successfully seach a buyer!`)
-          this.setState({
-            buyersToDisplay: [...res.data]
-          });
-         })
-        .catch(() => toast.error(`You are not successfully seach a buyer!`))
   }
 
   // Do not edit the code below
